@@ -109,16 +109,16 @@ def stream_groq_response(client, messages):
         print(f"\n\033[91m\033[1mOffline Error:\033[0m Internet connection lost.\n")
         return
     try:
-        completion = client.chat.completions.create(
+        response = client.chat.completions.create(
             model="llama-3.3-70b-versatile", 
             messages=messages,
             stream=True
         )
         print(f"\n\033[94m\033[1m🤖 JCP Copilot:\033[0m ", end="", flush=True)
         in_code_block = False
-        for chunk in completion:
-            content = chunk.choices.delta.content
-            if content:
+        for chunk in response:
+            if chunk.choices[0].delta.content: # Access via list index [0]
+                content = chunk.choices[0].delta.content
                 if "```" in content:
                     in_code_block = not in_code_block
                     color = "\033[92m" if in_code_block else "\033[0m"
